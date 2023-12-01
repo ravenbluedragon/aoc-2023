@@ -2,9 +2,9 @@ package main
 
 import (
 	"testing"
-
-	"github.com/ravenbluedragon/aoc-2023/common"
 )
+
+const base_data = "../test-data/"
 
 func TestEvaluate1(t *testing.T) {
 	data := []struct {
@@ -24,13 +24,57 @@ func TestEvaluate1(t *testing.T) {
 	}
 }
 
-func TestPart1(t *testing.T) {
-	filename := "../data/01-test1.txt"
+func TestSolve1(t *testing.T) {
+	filename := base_data + "01-1.txt"
 	expected := 142
-	actual := evaluate1(common.LoadData(filename))
+	actual := solve1(filename)
 
 	if actual != expected {
 		t.Errorf("evaluate1(%s) = %d, expected %d", filename, actual, expected)
+	}
+}
+
+func TestFindFirstDigit(t *testing.T) {
+	tests := []struct {
+		line     string
+		expected int
+	}{
+		{"abc123def", 1},
+		{"xyz987uvw", 9},
+		{"1", 1},
+		{"123", 1},
+		{"a1a", 1},
+		{"three", 3},
+		{"twoseven", 2},
+	}
+
+	for _, tc := range tests {
+		result := findFirstDigit(tc.line)
+		if result != tc.expected {
+			t.Errorf("findFirstDigit(%s) = %d, expected %d", tc.line, result, tc.expected)
+		}
+	}
+}
+
+func TestFindLastDigit(t *testing.T) {
+	tests := []struct {
+		line     string
+		expected int
+	}{
+		{"abc123def", 3},
+		{"xyz987uvw", 7},
+		{"1", 1},
+		{"123", 3},
+		{"a1a", 1},
+		{"three", 3},
+		{"twoseven", 7},
+	}
+
+	for _, tc := range tests {
+		result := findLastDigit(tc.line)
+		if result != tc.expected {
+			t.Errorf("findLastDigit(%s) = %d, expected %d", tc.line, result, tc.expected)
+		}
 	}
 }
 
@@ -52,10 +96,10 @@ func TestEvaluate2(t *testing.T) {
 	}
 }
 
-func TestPart2(t *testing.T) {
-	filename := "../data/01-test2.txt"
+func TestSolve2(t *testing.T) {
+	filename := base_data + "01-2.txt"
 	expected := 281
-	actual := evaluate2(common.LoadData(filename))
+	actual := solve2(filename)
 
 	if actual != expected {
 		t.Errorf("evaluate2(%s) = %d, expected %d", filename, actual, expected)

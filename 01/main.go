@@ -1,60 +1,88 @@
 package main
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/ravenbluedragon/aoc-2023/common"
 )
 
+// boilerplate to load and solve puzzles
 func main() {
-	data := common.LoadData("data/01.txt")
-	fmt.Printf("Part 1 result: %d\n", evaluate1(data))
-	fmt.Printf("Part 2 result: %d\n", evaluate2(data))
+	common.ChoosePart(1, solve1, solve2)
 }
+
+func solve1(filename string) any {
+	data := common.LoadData(filename)
+	return evaluate1(data)
+}
+
+func solve2(filename string) any {
+	data := common.LoadData(filename)
+	return evaluate2(data)
+}
+
+// ctoi converts a byte to an int
+func ctoi(c byte) int {
+	return int(c - '0')
+}
+
+var digits = "0123456789"
+var words = []string{"zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"}
 
 func evaluate1(data []string) int {
 	var result int
 	for _, line := range data {
-		first := strings.IndexAny(line, "0123456789")
-		last := strings.LastIndexAny(line, "0123456789")
-		result += 10*int(line[first]-'0') + int(line[last]-'0')
+		first := strings.IndexAny(line, digits)
+		last := strings.LastIndexAny(line, digits)
+		result += 10*ctoi(line[first]) + ctoi(line[last])
 	}
 	return result
 }
 
-var digits = []string{"zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"}
-
 func evaluate2(data []string) int {
 	var result int
 	for _, line := range data {
-		first_val := 0
-		// get first digit
-		first := strings.IndexAny(line, "0123456789")
-		if first != -1 {
-			first_val = int(line[first] - '0')
-		}
-		for i, digit := range digits {
-			if index := strings.Index(line, digit); index != -1 && (index < first || first == -1) {
-				first = index
-				first_val = i
-			}
-		}
-
-		// get last digit
-		last_val := 0
-		last := strings.LastIndexAny(line, "0123456789")
-		if last != -1 {
-			last_val = int(line[last] - '0')
-		}
-		for i, digit := range digits {
-			if index := strings.LastIndex(line, digit); index != -1 && index > last {
-				last = index
-				last_val = i
-			}
-		}
-
+		first_val := findFirstDigit(line)
+		last_val := findLastDigit(line)
 		result += 10*first_val + last_val
 	}
 	return result
+}
+
+func findDigit(
+	line string,
+	charSearch func(line string, chars string) int,
+	wordSearch func(line string, needle string) int,
+	sort func(best int, current int) bool,
+) int {
+	val := 0
+	index := charSearch(line, digits)
+	if index != -1 {
+		val = ctoi(line[index])
+	}
+	for i, digit := range words {
+		if idx := wordSearch(line, digit); idx != -1 && sort(index, idx) {
+			index = idx
+			val = i
+		}
+	}
+	return val
+}
+
+func findFirstDigit(line string) int {
+	return findDigit(
+		line,
+		strings.IndexAny,
+		strings.Index,
+		func(best, current int) bool { return best == -1 || current < best },
+	)
+}
+
+func findLastDigit(line string) int {
+	return findDigit(
+		line,
+		strings.LastIndexAny,
+		strings.LastIndex,
+		func(best, current int) bool { return current > best },
+	)
 }
