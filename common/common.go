@@ -40,7 +40,7 @@ func ChoosePart(day int, part1 func(string) any, part2 func(string) any) {
 		log.Fatalf("Expected part to be 1 or 2, was %s", part)
 	}
 
-	formatString := fmt.Sprintf("%sDay %%d%s %sPart %%s%s: %s%%v%s\n", Green, Reset, Purple, Reset, Bold+Yellow, Reset)
+	formatString := fmt.Sprintf("%sDay %%02d%s %sPart %%s%s: %s%%v%s\n", Green, Reset, Purple, Reset, Bold+Yellow, Reset)
 	log.Printf(formatString, day, part, value)
 }
 
