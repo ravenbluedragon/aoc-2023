@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/ravenbluedragon/aoc-2023/common"
+	"github.com/ravenbluedragon/aoc-2023/common/grid"
 )
 
 // boilerplate to load and solve puzzles
@@ -20,11 +21,26 @@ func solve1(filename string) any {
 	return sum
 }
 
-func loadNumbersAndSymbols(filename string) ([]PartNumber, map[[2]int]rune) {
+func solve2(filename string) any {
+	numbers, symbols := loadNumbersAndSymbols(filename)
+	sum := 0
+	for pos, symb := range symbols {
+		if symb == '*' {
+			adj := adjacent(pos, numbers)
+			if len(adj) == 2 {
+				sum += adj[0].Value * adj[1].Value
+			}
+		}
+	}
+	return sum
+}
+
+// loadNumbersAndSymbols loads the positions and values of numbers and symbols from the file
+func loadNumbersAndSymbols(filename string) ([]PartNumber, map[grid.Point2D]rune) {
 	data := common.LoadData(filename)
 
 	var numbers []PartNumber
-	symbols := make(map[[2]int]rune)
+	symbols := make(map[grid.Point2D]rune)
 
 	for i, line := range data {
 		numbers = append(numbers, numberPositions(i, line)...)
@@ -35,20 +51,7 @@ func loadNumbersAndSymbols(filename string) ([]PartNumber, map[[2]int]rune) {
 	return numbers, symbols
 }
 
-func solve2(filename string) any {
-	numbers, symbols := loadNumbersAndSymbols(filename)
-	sum := 0
-	for pos, symb := range symbols {
-		if symb == '*' {
-			adjacent := borders(pos, numbers)
-			if len(adjacent) == 2 {
-				sum += adjacent[0].Value * adjacent[1].Value
-			}
-		}
-	}
-	return sum
-}
-
+// PartNumber stores the position and value of a number in the grid
 type PartNumber struct {
 	LineNo int
 	Start  int
@@ -56,14 +59,15 @@ type PartNumber struct {
 	Value  int
 }
 
-func (p *PartNumber) Border() [][2]int {
-	var border [][2]int
+// Border returns the positions adjacent to the number
+func (p *PartNumber) Border() []grid.Point2D {
+	var border []grid.Point2D
 	rows := []int{p.LineNo - 1, p.LineNo, p.LineNo + 1}
-	for _, i := range rows {
-		if i >= 0 {
-			for j := p.Start - 1; j <= p.End+1; j++ {
+	for _, j := range rows {
+		if j >= 0 {
+			for i := p.Start - 1; i <= p.End+1; i++ {
 				if j >= 0 {
-					border = append(border, [2]int{i, j})
+					border = append(border, grid.P2(i, j))
 				}
 			}
 		}
@@ -71,20 +75,19 @@ func (p *PartNumber) Border() [][2]int {
 	return border
 }
 
-func borders(pos [2]int, numbers []PartNumber) []PartNumber {
+// adjacent returns the numbers adjacent to the given position
+func adjacent(pos grid.Point2D, numbers []PartNumber) []PartNumber {
 	var include []PartNumber
 	for _, n := range numbers {
-		for _, b := range n.Border() {
-			if b == pos {
-				include = append(include, n)
-				break
-			}
+		if (n.Start-1 <= pos.X && pos.X <= n.End+1) && (n.LineNo-1 <= pos.Y && pos.Y <= n.LineNo+1) {
+			include = append(include, n)
 		}
 	}
 	return include
 }
 
-func (p *PartNumber) BordersSymbol(symbols map[[2]int]rune) bool {
+// BordersSymbol returns true if the number borders a symbol
+func (p *PartNumber) BordersSymbol(symbols map[grid.Point2D]rune) bool {
 	for _, pos := range p.Border() {
 		if _, ok := symbols[pos]; ok {
 			return true
@@ -93,6 +96,7 @@ func (p *PartNumber) BordersSymbol(symbols map[[2]int]rune) bool {
 	return false
 }
 
+// numberPositions returns the positions of numbers in the line
 func numberPositions(lineNo int, line string) []PartNumber {
 	var positions []PartNumber
 	number := 0
@@ -115,11 +119,12 @@ func numberPositions(lineNo int, line string) []PartNumber {
 	return positions
 }
 
-func symbolPositions(lineNo int, line string) map[[2]int]rune {
-	positions := make(map[[2]int]rune)
+// symbolPositions returns the positions of symbols in the line
+func symbolPositions(lineNo int, line string) map[grid.Point2D]rune {
+	positions := make(map[grid.Point2D]rune)
 	for i, c := range line {
 		if c != '.' && (c < '0' || c > '9') {
-			positions[[2]int{lineNo, i}] = c
+			positions[grid.P2(i, lineNo)] = c
 		}
 	}
 	return positions
