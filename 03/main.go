@@ -61,13 +61,12 @@ type PartNumber struct {
 // Border returns the positions adjacent to the number
 func (p *PartNumber) Border() []grid.Point2D {
 	var border []grid.Point2D
-	rows := []int{p.pos.Min.Y - 1, p.pos.Min.Y, p.pos.Min.Y + 1}
-	for _, j := range rows {
-		if j >= 0 {
-			for i := p.pos.Min.X - 1; i <= p.pos.Max.X+1; i++ {
-				if j >= 0 {
-					border = append(border, grid.P2(i, j))
-				}
+	rect := p.pos.Grow8(1)
+	for i := rect.Min.X; i <= rect.Max.X; i++ {
+		for j := rect.Min.Y; j <= rect.Max.Y; j++ {
+			pt := grid.P2(i, j)
+			if !p.pos.Contains(pt) {
+				border = append(border, pt)
 			}
 		}
 	}
@@ -78,7 +77,7 @@ func (p *PartNumber) Border() []grid.Point2D {
 func adjacent(pos grid.Point2D, numbers []PartNumber) []PartNumber {
 	var include []PartNumber
 	for _, n := range numbers {
-		if (n.pos.Min.X-1 <= pos.X && pos.X <= n.pos.Max.X+1) && (n.pos.Min.Y-1 <= pos.Y && pos.Y <= n.pos.Max.Y+1) {
+		if n.pos.Grow8(1).Contains(pos) {
 			include = append(include, n)
 		}
 	}
