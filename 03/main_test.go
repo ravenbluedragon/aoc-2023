@@ -29,16 +29,16 @@ func TestSolve2(t *testing.T) {
 }
 
 var expectedNumbers []PartNumber = []PartNumber{
-	{0, 0, 2, 467},
-	{0, 5, 7, 114},
-	{2, 2, 3, 35},
-	{2, 6, 8, 633},
-	{4, 0, 2, 617},
-	{5, 7, 8, 58},
-	{6, 2, 4, 592},
-	{7, 6, 8, 755},
-	{9, 1, 3, 664},
-	{9, 5, 7, 598},
+	{grid.R2c(0, 0, 2, 0), 467},
+	{grid.R2c(5, 0, 7, 0), 114},
+	{grid.R2c(2, 2, 3, 2), 35},
+	{grid.R2c(6, 2, 8, 2), 633},
+	{grid.R2c(0, 4, 2, 4), 617},
+	{grid.R2c(7, 5, 8, 5), 58},
+	{grid.R2c(2, 6, 4, 6), 592},
+	{grid.R2c(6, 7, 8, 7), 755},
+	{grid.R2c(1, 9, 3, 9), 664},
+	{grid.R2c(5, 9, 7, 9), 598},
 }
 
 var exepectedSymbols map[grid.Point2D]rune = map[grid.Point2D]rune{

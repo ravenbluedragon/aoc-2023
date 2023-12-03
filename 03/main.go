@@ -15,7 +15,7 @@ func solve1(filename string) any {
 	sum := 0
 	for _, n := range numbers {
 		if n.BordersSymbol(symbols) {
-			sum += n.Value
+			sum += n.value
 		}
 	}
 	return sum
@@ -28,7 +28,7 @@ func solve2(filename string) any {
 		if symb == '*' {
 			adj := adjacent(pos, numbers)
 			if len(adj) == 2 {
-				sum += adj[0].Value * adj[1].Value
+				sum += adj[0].value * adj[1].value
 			}
 		}
 	}
@@ -53,19 +53,17 @@ func loadNumbersAndSymbols(filename string) ([]PartNumber, map[grid.Point2D]rune
 
 // PartNumber stores the position and value of a number in the grid
 type PartNumber struct {
-	LineNo int
-	Start  int
-	End    int
-	Value  int
+	pos   grid.Rect2D
+	value int
 }
 
 // Border returns the positions adjacent to the number
 func (p *PartNumber) Border() []grid.Point2D {
 	var border []grid.Point2D
-	rows := []int{p.LineNo - 1, p.LineNo, p.LineNo + 1}
+	rows := []int{p.pos.Min.Y - 1, p.pos.Min.Y, p.pos.Min.Y + 1}
 	for _, j := range rows {
 		if j >= 0 {
-			for i := p.Start - 1; i <= p.End+1; i++ {
+			for i := p.pos.Min.X - 1; i <= p.pos.Max.X+1; i++ {
 				if j >= 0 {
 					border = append(border, grid.P2(i, j))
 				}
@@ -79,7 +77,7 @@ func (p *PartNumber) Border() []grid.Point2D {
 func adjacent(pos grid.Point2D, numbers []PartNumber) []PartNumber {
 	var include []PartNumber
 	for _, n := range numbers {
-		if (n.Start-1 <= pos.X && pos.X <= n.End+1) && (n.LineNo-1 <= pos.Y && pos.Y <= n.LineNo+1) {
+		if (n.pos.Min.X-1 <= pos.X && pos.X <= n.pos.Max.X+1) && (n.pos.Min.Y-1 <= pos.Y && pos.Y <= n.pos.Max.Y+1) {
 			include = append(include, n)
 		}
 	}
@@ -108,13 +106,13 @@ func numberPositions(lineNo int, line string) []PartNumber {
 			}
 			number = number*10 + int(c-'0')
 		} else if start >= 0 {
-			positions = append(positions, PartNumber{lineNo, start, i - 1, number})
+			positions = append(positions, PartNumber{grid.R2c(start, lineNo, i-1, lineNo), number})
 			start = -1
 			number = 0
 		}
 	}
 	if start >= 0 {
-		positions = append(positions, PartNumber{lineNo, start, len(line) - 1, number})
+		positions = append(positions, PartNumber{grid.R2c(start, lineNo, len(line)-1, lineNo), number})
 	}
 	return positions
 }
