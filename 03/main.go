@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/ravenbluedragon/aoc-2023/common"
 	"github.com/ravenbluedragon/aoc-2023/common/grid"
+	"github.com/ravenbluedragon/aoc-2023/common/parse"
 )
 
 // boilerplate to load and solve puzzles
@@ -100,11 +101,11 @@ func numberPositions(lineNo int, line string) []PartNumber {
 	number := 0
 	start := -1
 	for i, c := range line {
-		if c >= '0' && c <= '9' {
+		if parse.IsDigit(c) {
 			if start < 0 {
 				start = i
 			}
-			number = number*10 + int(c-'0')
+			number = number*10 + parse.DigitToInt(c)
 		} else if start >= 0 {
 			positions = append(positions, PartNumber{grid.R2c(start, lineNo, i-1, lineNo), number})
 			start = -1
@@ -121,7 +122,7 @@ func numberPositions(lineNo int, line string) []PartNumber {
 func symbolPositions(lineNo int, line string) map[grid.Point2D]rune {
 	positions := make(map[grid.Point2D]rune)
 	for i, c := range line {
-		if c != '.' && (c < '0' || c > '9') {
+		if c != '.' && !parse.IsDigit(c) {
 			positions[grid.P2(i, lineNo)] = c
 		}
 	}
