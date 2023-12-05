@@ -17,14 +17,14 @@ func main() {
 func solve1(filename string) any {
 	lines := common.LoadData(filename)
 	almanac := parseAlmanac(lines)
-	min_location := math.MaxInt
+	minLocation := math.MaxInt
 	for _, seed := range almanac.seeds {
 		location := almanac.convert(seed)
-		if location < min_location {
-			min_location = location
+		if location < minLocation {
+			minLocation = location
 		}
 	}
-	return min_location
+	return minLocation
 }
 
 func solve2(filename string) any {
@@ -32,13 +32,13 @@ func solve2(filename string) any {
 	almanac := parseAlmanac(lines)
 	seedRanges := almanac.seedRanges()
 	locationRanges := almanac.convertRanges(seedRanges)
-	min := math.MaxInt
+	minLocation := math.MaxInt
 	for _, r := range locationRanges {
-		if r.start < min {
-			min = r.start
+		if r.start < minLocation {
+			minLocation = r.start
 		}
 	}
-	return min
+	return minLocation
 }
 
 // type intRange is a range of ints
