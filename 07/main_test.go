@@ -31,11 +31,13 @@ func TestHandTypesSimple(t *testing.T) {
 	lines := common.LoadData(filename)
 	hands := parseHands(lines, false)
 	slices.SortFunc(hands, compareHands)
+
 	type test struct {
-		hand string
-		kind uint8
-		rank int
+		hand     string
+		handType HandType
+		rank     int
 	}
+
 	expected := []test{
 		{"32T3K", OnePair, 1},
 		{"KTJJT", TwoPairs, 2},
@@ -43,9 +45,10 @@ func TestHandTypesSimple(t *testing.T) {
 		{"T55J5", ThreeOfAKind, 4},
 		{"QQQJA", ThreeOfAKind, 5},
 	}
+
 	for i, hand := range hands {
-		if hand.kind != expected[i].kind {
-			t.Errorf("hand %s has kind %s, expected %s", hand.cards, kindName(hand.kind), kindName(expected[i].kind))
+		if hand.handType != expected[i].handType {
+			t.Errorf("hand %s has type %s, expected %s", hand.cards, hand.handType, expected[i].handType)
 		}
 		if i+1 != expected[i].rank {
 			t.Errorf("hand %s has rank %d, expected %d", hand.cards, i, expected[i].rank)
@@ -57,11 +60,13 @@ func TestHandTypesJokers(t *testing.T) {
 	lines := common.LoadData(filename)
 	hands := parseHands(lines, true)
 	slices.SortFunc(hands, compareHands)
+
 	type test struct {
-		hand string
-		kind uint8
-		rank int
+		hand     string
+		handType HandType
+		rank     int
 	}
+
 	expected := []test{
 		{"32T3K", OnePair, 1},
 		{"KK677", TwoPairs, 2},
@@ -69,9 +74,10 @@ func TestHandTypesJokers(t *testing.T) {
 		{"QQQJA", FourOfAKind, 4},
 		{"KTJJT", FourOfAKind, 5},
 	}
+
 	for i, hand := range hands {
-		if hand.kind != expected[i].kind {
-			t.Errorf("hand %s has kind %s, expected %s", hand.cards, kindName(hand.kind), kindName(expected[i].kind))
+		if hand.handType != expected[i].handType {
+			t.Errorf("hand %s has type %s, expected %s", hand.cards, hand.handType, expected[i].handType)
 		}
 		if i+1 != expected[i].rank {
 			t.Errorf("hand %s has rank %d, expected %d", hand.cards, i, expected[i].rank)
@@ -81,9 +87,9 @@ func TestHandTypesJokers(t *testing.T) {
 
 func TestHandKind(t *testing.T) {
 	table := []struct {
-		hand   string
-		jokers bool
-		kind   uint8
+		hand     string
+		jokers   bool
+		handType HandType
 	}{
 		{"32T3K", false, OnePair},
 		{"KK677", false, TwoPairs},
@@ -105,9 +111,9 @@ func TestHandKind(t *testing.T) {
 		{"J2222", true, FiveOfAKind},
 	}
 	for _, test := range table {
-		kind := handKind(test.hand, test.jokers)
-		if kind != test.kind {
-			t.Errorf("hand %s (jokers %v) has kind %s, expected %s", test.hand, test.jokers, kindName(kind), kindName(test.kind))
+		handType := handType(test.hand, test.jokers)
+		if handType != test.handType {
+			t.Errorf("hand %s (jokers %v) has type %s, expected %s", test.hand, test.jokers, handType, test.handType)
 		}
 	}
 
