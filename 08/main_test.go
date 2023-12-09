@@ -37,7 +37,7 @@ func TestSolve2(t *testing.T) {
 
 func TestReadMap(t *testing.T) {
 	filename := base_folder + "08-1.txt"
-	expected := map[string][2]string{
+	expected := map[string]Node{
 		"AAA": {"BBB", "CCC"},
 		"BBB": {"DDD", "EEE"},
 		"CCC": {"ZZZ", "GGG"},
